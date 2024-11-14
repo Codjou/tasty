@@ -1,0 +1,783 @@
+<html><head><base href="/" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasty - Food Ordering</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f5f5;
+    }
+
+    .header {
+      background-color: #ff6b6b;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .header-login-required {
+      display: none;
+    }
+
+    .login-container {
+      position: static;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem;
+    }
+
+    .g_id_signin {
+      margin: 0;
+      padding: 0;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+      overflow: hidden;
+    }
+
+    .category-title {
+      color: #333;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #ff6b6b;
+    }
+
+    .menu-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      padding: 1rem 0;
+      gap: 1.5rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .menu-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .menu-item {
+      flex: 0 0 auto;
+      width: 250px;
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .menu-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .price {
+      color: #ff6b6b;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .scroll-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .scroll-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+    }
+
+    .scroll-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .cart {
+      position: fixed;
+      right: 2rem;
+      bottom: 2rem;
+      background: #ff6b6b;
+      color: white;
+      padding: 1rem;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    .cart-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+      z-index: 1001;
+      min-width: 300px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .quantity-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .cancel-order {
+      background: #dc3545;
+    }
+
+    .confirm-order {
+      background: #4CAF50;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: white;
+      color: #ff6b6b;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+
+    .client-info-form {
+      margin-top: 2rem;
+      border-top: 1px solid #eee;
+      padding-top: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      height: 80px;
+      resize: vertical;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .add-to-cart-btn {
+      width: 100%;
+      padding: 0.5rem;
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .add-to-cart-btn:hover {
+      background: #ff5252;
+    }
+
+    .user-info {
+      display: none;
+      color: white;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-info img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .logout-btn {
+      background: white;
+      color: #ff6b6b;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Add this to your existing CSS */
+    .welcome-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+      z-index: 2000;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    .welcome-modal h2 {
+      color: #ff6b6b;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .welcome-modal p {
+      color: #666;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .welcome-modal button {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .welcome-modal button:hover {
+      background: #ff5252;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+    }
+
+    .welcome-modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1999;
+      backdrop-filter: blur(3px);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="logo-container">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+        <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/>
+      </svg>
+      <h1>Tasty</h1>
+    </div>
+    <div class="login-container">
+      <div id="g_id_onload"
+           data-client_id="YOUR_ACTUAL_CLIENT_ID.apps.googleusercontent.com"
+           data-callback="handleCredentialResponse">
+      </div>
+      <div class="g_id_signin" 
+           data-type="standard" 
+           data-shape="pill"
+           data-theme="outline"
+           data-size="large">
+      </div>
+      <div class="user-info">
+        <img id="user-image" alt="User profile picture">
+        <span id="user-name"></span>
+        <button class="logout-btn" onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Categories -->
+    <section class="category-section">
+      <h2 class="category-title">Starters</h2>
+      <div class="scroll-buttons">
+        <button class="scroll-btn scroll-left" data-direction="left">←</button>
+        <button class="scroll-btn scroll-right" data-direction="right">→</button>
+      </div>
+      <div class="menu-grid">
+        <!-- Menu items will be dynamically generated -->
+      </div>
+    </section>
+    <section class="category-section">
+      <h2 class="category-title">Main Course</h2>
+      <div class="scroll-buttons">
+        <button class="scroll-btn scroll-left" data-direction="left">←</button>
+        <button class="scroll-btn scroll-right" data-direction="right">→</button>
+      </div>
+      <div class="menu-grid">
+        <!-- Menu items will be dynamically generated -->
+      </div>
+    </section>
+  </main>
+
+  <div class="cart">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+      <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+    </svg>
+    <span class="cart-count">0</span>
+  </div>
+
+  <div class="modal-backdrop"></div>
+  <div class="cart-modal">
+    <h2>Your Cart</h2>
+    <div class="cart-items">
+      <!-- Cart items will be dynamically added here -->
+    </div>
+    <div class="cart-total">
+      <h3>Total: $<span id="total-amount">0.00</span></h3>
+    </div>
+    <div class="client-info-form">
+      <h3>Customer Information</h3>
+      <form id="customer-form">
+        <div class="form-group">
+          <label for="client-name">Name *</label>
+          <input type="text" id="client-name" required>
+        </div>
+        <div class="form-group">
+          <label for="client-phone">Phone *</label>
+          <input type="tel" id="client-phone" required>
+        </div>
+        <div class="form-group">
+          <label for="client-address">Delivery Address *</label>
+          <textarea id="client-address" required></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-buttons">
+      <button class="cancel-order">Cancel Order</button>
+      <button class="confirm-order">Confirm Order</button>
+    </div>
+  </div>
+
+  <div class="welcome-modal-backdrop"></div>
+  <div class="welcome-modal">
+    <h2>Welcome to Tasty!</h2>
+    <p>To enhance your experience and place orders, please sign in with your Google account.</p>
+    <button onclick="closeWelcomeModal()">Got it!</button>
+  </div>
+
+  <script>
+    // Sample menu data
+    const menuCategories = {
+      'Starters': [
+        { name: 'Spring Rolls', price: 5.99, image: 'spring-rolls.jpg' },
+        { name: 'Chicken Wings', price: 7.99, image: 'wings.jpg' },
+        { name: 'Garlic Bread', price: 4.99, image: 'garlic-bread.jpg' },
+        { name: 'Soup of the Day', price: 5.99, image: 'soup.jpg' },
+        { name: 'Bruschetta', price: 6.99, image: 'bruschetta.jpg' }
+      ],
+      'Main Course': [
+        // Add more categories and items
+      ]
+    };
+
+    let cart = [];
+    let userEmail = '';
+    let userName = '';
+    let userPicture = '';
+
+    // First visit notification function
+    function showFirstVisitNotification() {
+      if (!localStorage.getItem('hasVisited')) {
+        setTimeout(() => {
+          document.querySelector('.welcome-modal').style.display = 'block';
+          document.querySelector('.welcome-modal-backdrop').style.display = 'block';
+        }, 1000);
+      }
+    }
+
+    function handleCredentialResponse(response) {
+      // Decode the JWT token
+      const responsePayload = jwt_decode(response.credential);
+      
+      userEmail = responsePayload.email;
+      userName = responsePayload.name;
+      userPicture = responsePayload.picture;
+
+      // Update UI
+      document.querySelector('.g_id_signin').style.display = 'none';
+      document.querySelector('.user-info').style.display = 'flex';
+      document.getElementById('user-image').src = userPicture;
+      document.getElementById('user-name').textContent = userName;
+
+      // Store auth state
+      localStorage.setItem('userEmail', userEmail);
+      localStorage.setItem('userName', userName);
+      localStorage.setItem('userPicture', userPicture);
+    }
+
+    function signOut() {
+      google.accounts.id.disableAutoSelect();
+      
+      // Clear user data
+      userEmail = '';
+      userName = '';
+      userPicture = '';
+      
+      // Update UI
+      document.querySelector('.g_id_signin').style.display = 'block';
+      document.querySelector('.user-info').style.display = 'none';
+      
+      // Clear stored auth state
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userPicture');
+    }
+
+    // Check for stored auth state on load
+    window.addEventListener('load', () => {
+      const storedEmail = localStorage.getItem('userEmail');
+      if (storedEmail) {
+        userEmail = storedEmail;
+        userName = localStorage.getItem('userName');
+        userPicture = localStorage.getItem('userPicture');
+
+        document.querySelector('.g_id_signin').style.display = 'none';
+        document.querySelector('.user-info').style.display = 'flex';
+        document.getElementById('user-image').src = userPicture;
+        document.getElementById('user-name').textContent = userName;
+      }
+      
+      // Add this line to show the notification
+      showFirstVisitNotification();
+    });
+
+    function closeWelcomeModal() {
+      document.querySelector('.welcome-modal').style.display = 'none';
+      document.querySelector('.welcome-modal-backdrop').style.display = 'none';
+      localStorage.setItem('hasVisited', 'true');
+    }
+
+    // Generate menu items
+    function generateMenuItems() {
+      Object.entries(menuCategories).forEach(([category, items]) => {
+        const section = document.createElement('section');
+        section.className = 'category-section';
+        section.innerHTML = `
+          <h2 class="category-title">${category}</h2>
+          <div class="scroll-buttons">
+            <button class="scroll-btn scroll-left" data-direction="left">←</button>
+            <button class="scroll-btn scroll-right" data-direction="right">→</button>
+          </div>
+          <div class="menu-grid">
+            ${items.map(item => `
+              <div class="menu-item">
+                <img src="${item.image}" alt="${item.name}" width="200" height="150">
+                <h3>${item.name}</h3>
+                <p class="price">$${item.price.toFixed(2)}</p>
+                <button class="add-to-cart-btn" data-name="${item.name}" data-price="${item.price}">Add to Cart</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        document.querySelector('main').appendChild(section);
+      });
+    }
+
+    // Cart functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      generateMenuItems();
+
+      const cartButton = document.querySelector('.cart');
+      const cartModal = document.querySelector('.cart-modal');
+      const modalBackdrop = document.querySelector('.modal-backdrop');
+      const cartCount = document.querySelector('.cart-count');
+
+      cartButton.addEventListener('click', () => {
+        if (!userEmail) {
+          alert('Please sign in with your Google account to access the cart');
+          return;
+        }
+        cartModal.style.display = 'block';
+        modalBackdrop.style.display = 'block';
+        updateCartDisplay();
+      });
+
+      modalBackdrop.addEventListener('click', () => {
+        cartModal.style.display = 'none';
+        modalBackdrop.style.display = 'none';
+      });
+
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('add-to-cart-btn')) {
+          if (!userEmail) {
+            alert('Please sign in with your Google account to add items to cart');
+            return;
+          }
+          const name = e.target.dataset.name;
+          const price = parseFloat(e.target.dataset.price);
+          addToCart(name, price);
+          updateCartCount();
+        }
+      });
+
+      document.querySelector('.cancel-order').addEventListener('click', () => {
+        cart = [];
+        updateCartDisplay();
+        updateCartCount();
+        cartModal.style.display = 'none';
+        modalBackdrop.style.display = 'none';
+      });
+
+      document.querySelector('.confirm-order').addEventListener('click', () => {
+        if (!userEmail) {
+          alert('Please sign in with Google to place an order');
+          return;
+        }
+
+        if (cart.length === 0) {
+          alert('Your cart is empty!');
+          return;
+        }
+
+        const customerForm = document.getElementById('customer-form');
+        
+        if (!customerForm.checkValidity()) {
+          alert('Please fill in all required customer information');
+          return;
+        }
+
+        const name = document.getElementById('client-name').value;
+        const phone = document.getElementById('client-phone').value;
+        const address = document.getElementById('client-address').value;
+
+        const orderDetails = `
+Customer Information:
+Name: ${name}
+Phone: ${phone}
+Address: ${address}
+Email: ${userEmail}
+
+Order Details:
+${cart.map(item => 
+  `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+).join('\n')}
+
+Total: $${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
+`;
+        
+        // Updated mailto link with the correct email address
+        const mailtoLink = `mailto:msndzcons@gmail.com?subject=New Order from ${name}&body=${encodeURIComponent(orderDetails)}`;
+        window.location.href = mailtoLink;
+
+        // Reset everything after sending
+        customerForm.reset();
+        cart = [];
+        updateCartDisplay();
+        updateCartCount();
+        cartModal.style.display = 'none';
+        modalBackdrop.style.display = 'none';
+
+        // Show success message
+        setTimeout(() => {
+          alert('Order sent successfully! You can now make another order.');
+        }, 100);
+      });
+    });
+
+    function addToCart(name, price) {
+      const existingItem = cart.find(item => item.name === name);
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        cart.push({ name, price, quantity: 1 });
+      }
+      updateCartDisplay();
+    }
+
+    function updateCartCount() {
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.querySelector('.cart-count').textContent = total;
+    }
+
+    function updateCartDisplay() {
+      const cartItems = document.querySelector('.cart-items');
+      cartItems.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <span>${item.name}</span>
+          <div class="cart-item-controls">
+            <span>$${(item.price * item.quantity).toFixed(2)}</span>
+            <button class="quantity-btn minus" data-name="${item.name}">-</button>
+            <span>${item.quantity}</span>
+            <button class="quantity-btn plus" data-name="${item.name}">+</button>
+            <button class="delete-btn" data-name="${item.name}">×</button>
+          </div>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
+        btn.addEventListener('click', () => updateQuantity(btn.dataset.name, -1));
+      });
+
+      document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
+        btn.addEventListener('click', () => updateQuantity(btn.dataset.name, 1));
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => removeFromCart(btn.dataset.name));
+      });
+
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      document.getElementById('total-amount').textContent = total.toFixed(2);
+    }
+
+    function updateQuantity(name, change) {
+      const item = cart.find(item => item.name === name);
+      if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+          removeFromCart(name);
+        } else {
+          updateCartDisplay();
+          updateCartCount();
+        }
+      }
+    }
+
+    function removeFromCart(name) {
+      cart = cart.filter(item => item.name !== name);
+      updateCartDisplay();
+      updateCartCount();
+    }
+  </script>
+</body></html>
